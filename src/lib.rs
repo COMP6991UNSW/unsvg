@@ -19,45 +19,46 @@
 
 use resvg::{usvg, tiny_skia};
 use std::rc::Rc;
-use resvg::usvg::{NodeExt, Transform, TreeWriting, XmlOptions, Stroke};
+use resvg::usvg::{NodeExt, TreeWriting, XmlOptions};
 
 pub use resvg::usvg::Color;
 
 
 /// This contains 16 simple colors which users can select from.
 /// These correspond to the 16 colors available in the original Logo language.
+/// The colors are:
+///  - Black
+///  - Blue
+///  - Green
+///  - Cyan
+///  - Red
+///  - Magenta
+///  - Yellow
+///  - White
+///  - Brown
+///  - Tan
+///  - Forest
+///  - Aqua
+///  - Salmon
+///  - Purple
+///  - Orange
+///  - Grey
 pub static COLORS: [Color; 16] = [
-    /// Black
     Color {red: 0, green: 0, blue: 0},
-    /// Blue
     Color {red: 0, green: 0, blue: 255},
-    /// Green
-    Color {red: 0, green: 255, blue: 0},
-    /// Cyan
     Color {red: 0, green: 255, blue: 255},
-    /// Red
+    Color {red: 0, green: 255, blue: 0},
     Color {red: 255, green: 0, blue: 0},
-    /// Magenta
     Color {red: 255, green: 0, blue: 255},
-    /// Yellow
     Color {red: 255, green: 255, blue: 0},
-    /// White
     Color {red: 255, green: 255, blue: 255},
-    /// Brown
     Color {red: 165, green: 42, blue: 42},
-    /// Tan
     Color {red: 210, green: 180, blue: 140},
-    /// Forest
     Color {red: 34, green: 139, blue: 34},
-    /// Aqua
     Color {red: 127, green: 255, blue: 212},
-    /// Salmon
     Color {red: 250, green: 128, blue: 114},
-    /// Purple
     Color {red: 128, green: 0, blue: 128},
-    /// Orange
     Color {red: 255, green: 165, blue: 0},
-    /// Grey
     Color {red: 128, green: 128, blue: 128},
 ];
 
@@ -87,7 +88,7 @@ impl Image {
             root: usvg::Node::new(usvg::NodeKind::Group(usvg::Group::default())),
         };
 
-        let mut fill = usvg::Fill::from_paint(usvg::Paint::Color(usvg::Color::black()));
+        let fill = usvg::Fill::from_paint(usvg::Paint::Color(usvg::Color::black()));
         let mut path = usvg::Path::new(Rc::from(tiny_skia::PathBuilder::from_rect(
             size.to_non_zero_rect(0.0, 0.0).to_rect()
         )));
@@ -145,7 +146,7 @@ impl Image {
     pub fn draw_simple_line(&mut self, x: f32, y: f32, direction: i32, length: f32, color: Color) -> Result<(f32, f32), String> {
         let x = quantize(x);
         let y = quantize(y);
-        let mut paint = usvg::Paint::Color(color);
+        let paint = usvg::Paint::Color(color);
 
         let mut path = tiny_skia::PathBuilder::new();
         path.move_to(x, y);

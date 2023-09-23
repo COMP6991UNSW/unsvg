@@ -52,4 +52,5 @@ repository [here](https://github.com/COMP6991UNSW/unsvg) and get involved.
 
 ## License
 
-`unsvg` is Copyright © University of New South Wales.
+`unsvg` is Copyright © University of New South Wales, licensed under MIT or Apache 2.0
+at your option.
