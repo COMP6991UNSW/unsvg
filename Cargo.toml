@@ -1,7 +1,13 @@
 [package]
 name = "unsvg"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+description = "A simple SVG building library."
+license = "Copyright © University of New South Wales."
+authors = ["Tom Kunc <t.kunc@unsw.edu.au>", "Zac Kologlu", "Shrey Somaiya <shrey.somaiya@unsw.edu.au>"]
+documentation = "https://docs.rs/unsvg"
+homepage = "https://github.com/COMP6991UNSW/unsvg"
+repository = "https://github.com/COMP6991UNSW/unsvg"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
