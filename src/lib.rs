@@ -62,6 +62,22 @@ pub static COLORS: [Color; 16] = [
     Color {red: 128, green: 128, blue: 128},
 ];
 
+/// Tells you where a line will end, given a starting point, direction, and length.
+/// This is used by `draw_simple_line` to get the end point of a line.
+pub fn get_end_coordinates(x: f32, y: f32, direction: i32, length: f32) -> (f32, f32) {
+    let x = quantize(x);
+    let y = quantize(y);
+
+    // directions start at 0 degrees being straight up, and go clockwise
+    // we need to add 90 degrees to make 0 degrees straight right.
+    let direction_rad = ((direction as f32) - 90.0).to_radians();
+
+    let end_x = quantize(x + (direction_rad.cos() * length as f32));
+    let end_y = quantize(y + (direction_rad.sin() * length as f32));
+
+    (end_x, end_y)
+}
+
 /// This represents an image that's being constructed. Use the `new` function
 /// to create one.
 #[derive(Clone)]
@@ -141,22 +157,17 @@ impl Image {
         std::fs::write(path, self.tree.to_string(&XmlOptions::default())).map_err(|e| e.to_string())
     }
 
+
     /// Draw a line on the image, taking a starting point, direction, length, and color.
     /// We return the end point of the line as a tuple of (x, y).
     pub fn draw_simple_line(&mut self, x: f32, y: f32, direction: i32, length: f32, color: Color) -> Result<(f32, f32), String> {
         let x = quantize(x);
         let y = quantize(y);
-        let paint = usvg::Paint::Color(color);
+        let (end_x, end_y) = get_end_coordinates(x, y, direction, length);
 
+        let paint = usvg::Paint::Color(color);
         let mut path = tiny_skia::PathBuilder::new();
         path.move_to(x, y);
-
-        // directions start at 0 degrees being straight up, and go clockwise
-        // we need to add 90 degrees to make 0 degrees straight right.
-        let direction_rad = ((direction as f32) - 90.0).to_radians();
-
-        let end_x = quantize(x + (direction_rad.cos() * length as f32));
-        let end_y = quantize(y + (direction_rad.sin() * length as f32));
         path.line_to(end_x, end_y);
 
         let mut path = usvg::Path::new(path.finish().ok_or("Could not draw line".to_string())?.into());
