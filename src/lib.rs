@@ -1,3 +1,4 @@
+use resvg::usvg::{NodeExt, TreeWriting, XmlOptions};
 /// The unsvg crate provides a very simple interface for drawing images.
 ///
 /// See below for an example:
@@ -16,13 +17,26 @@
 ///     Ok(())
 /// }
 /// ```
-
-use resvg::{usvg, tiny_skia};
+use resvg::{tiny_skia, usvg};
 use std::rc::Rc;
-use resvg::usvg::{NodeExt, TreeWriting, XmlOptions};
 
 pub use resvg::usvg::Color;
 
+/// A type encapsulating some error encountered within `unsvg`.
+#[derive(Debug)]
+pub struct Error(String);
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::error::Error for Error {}
+
+/// All fallible functions provided by `unsvg` return our custom
+/// [`Error`] type, so we redefine `Result` with fixed error.
+type Result<T> = core::result::Result<T, Error>;
 
 /// This contains 16 simple colors which users can select from.
 /// These correspond to the 16 colors available in the original Logo language.
@@ -44,22 +58,86 @@ pub use resvg::usvg::Color;
 ///  - Orange
 ///  - Grey
 pub static COLORS: [Color; 16] = [
-    Color {red: 0, green: 0, blue: 0},
-    Color {red: 0, green: 0, blue: 255},
-    Color {red: 0, green: 255, blue: 255},
-    Color {red: 0, green: 255, blue: 0},
-    Color {red: 255, green: 0, blue: 0},
-    Color {red: 255, green: 0, blue: 255},
-    Color {red: 255, green: 255, blue: 0},
-    Color {red: 255, green: 255, blue: 255},
-    Color {red: 165, green: 42, blue: 42},
-    Color {red: 210, green: 180, blue: 140},
-    Color {red: 34, green: 139, blue: 34},
-    Color {red: 127, green: 255, blue: 212},
-    Color {red: 250, green: 128, blue: 114},
-    Color {red: 128, green: 0, blue: 128},
-    Color {red: 255, green: 165, blue: 0},
-    Color {red: 128, green: 128, blue: 128},
+    Color {
+        red: 0,
+        green: 0,
+        blue: 0,
+    },
+    Color {
+        red: 0,
+        green: 0,
+        blue: 255,
+    },
+    Color {
+        red: 0,
+        green: 255,
+        blue: 255,
+    },
+    Color {
+        red: 0,
+        green: 255,
+        blue: 0,
+    },
+    Color {
+        red: 255,
+        green: 0,
+        blue: 0,
+    },
+    Color {
+        red: 255,
+        green: 0,
+        blue: 255,
+    },
+    Color {
+        red: 255,
+        green: 255,
+        blue: 0,
+    },
+    Color {
+        red: 255,
+        green: 255,
+        blue: 255,
+    },
+    Color {
+        red: 165,
+        green: 42,
+        blue: 42,
+    },
+    Color {
+        red: 210,
+        green: 180,
+        blue: 140,
+    },
+    Color {
+        red: 34,
+        green: 139,
+        blue: 34,
+    },
+    Color {
+        red: 127,
+        green: 255,
+        blue: 212,
+    },
+    Color {
+        red: 250,
+        green: 128,
+        blue: 114,
+    },
+    Color {
+        red: 128,
+        green: 0,
+        blue: 128,
+    },
+    Color {
+        red: 255,
+        green: 165,
+        blue: 0,
+    },
+    Color {
+        red: 128,
+        green: 128,
+        blue: 128,
+    },
 ];
 
 /// Tells you where a line will end, given a starting point, direction, and length.
@@ -106,17 +184,16 @@ impl Image {
 
         let fill = usvg::Fill::from_paint(usvg::Paint::Color(usvg::Color::black()));
         let mut path = usvg::Path::new(Rc::from(tiny_skia::PathBuilder::from_rect(
-            size.to_non_zero_rect(0.0, 0.0).to_rect()
+            size.to_non_zero_rect(0.0, 0.0).to_rect(),
         )));
         path.fill = Some(fill);
-
 
         tree.root.append_kind(usvg::NodeKind::Path(path));
 
         Image {
             width,
             height,
-            tree
+            tree,
         }
     }
 
@@ -138,13 +215,12 @@ impl Image {
     /// let image = Image::new(100, 100);
     /// image.save_png("image.png");
     /// ```
-    pub fn save_png<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), String> {
+    pub fn save_png<P: AsRef<std::path::Path>>(&self, path: P) -> Result<()> {
         let rtree = resvg::Tree::from_usvg(&self.tree);
-
         let pixmap_size = rtree.size.to_int_size();
         let mut pixmap = tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
         rtree.render(tiny_skia::Transform::default(), &mut pixmap.as_mut());
-        pixmap.save_png(path).map_err(|e| e.to_string())
+        pixmap.save_png(path).map_err(|e| Error(e.to_string()))
     }
 
     /// Save the image to a file.
@@ -153,14 +229,21 @@ impl Image {
     /// let image = Image::new(100, 100);
     /// image.save_svg("image.svg");
     /// ```
-    pub fn save_svg<P: AsRef<std::path::Path>>(&self, path: P) -> Result<(), String> {
-        std::fs::write(path, self.tree.to_string(&XmlOptions::default())).map_err(|e| e.to_string())
+    pub fn save_svg<P: AsRef<std::path::Path>>(&self, path: P) -> Result<()> {
+        std::fs::write(path, self.tree.to_string(&XmlOptions::default()))
+            .map_err(|e| Error(e.to_string()))
     }
-
 
     /// Draw a line on the image, taking a starting point, direction, length, and color.
     /// We return the end point of the line as a tuple of (x, y).
-    pub fn draw_simple_line(&mut self, x: f32, y: f32, direction: i32, length: f32, color: Color) -> Result<(f32, f32), String> {
+    pub fn draw_simple_line(
+        &mut self,
+        x: f32,
+        y: f32,
+        direction: i32,
+        length: f32,
+        color: Color,
+    ) -> Result<(f32, f32)> {
         let x = quantize(x);
         let y = quantize(y);
         let (end_x, end_y) = get_end_coordinates(x, y, direction, length);
@@ -170,7 +253,11 @@ impl Image {
         path.move_to(x, y);
         path.line_to(end_x, end_y);
 
-        let mut path = usvg::Path::new(path.finish().ok_or("Could not draw line".to_string())?.into());
+        let mut path = usvg::Path::new(
+            path.finish()
+                .ok_or(Error("Could not draw line".to_string()))?
+                .into(),
+        );
         let mut stroke = usvg::Stroke::default();
         stroke.paint = paint;
         path.stroke = Some(stroke);
@@ -179,5 +266,4 @@ impl Image {
 
         Ok((end_x, end_y))
     }
-
 }
