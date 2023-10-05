@@ -71,12 +71,12 @@ pub static COLORS: [Color; 16] = [
     Color {
         red: 0,
         green: 255,
-        blue: 255,
+        blue: 0,
     },
     Color {
         red: 0,
         green: 255,
-        blue: 0,
+        blue: 255,
     },
     Color {
         red: 255,
