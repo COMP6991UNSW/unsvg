@@ -43,8 +43,8 @@ type Result<T> = core::result::Result<T, Error>;
 /// The colors are:
 ///  - Black
 ///  - Blue
-///  - Green
 ///  - Cyan
+///  - Green
 ///  - Red
 ///  - Magenta
 ///  - Yellow
