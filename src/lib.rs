@@ -209,6 +209,19 @@ impl Image {
         (self.width, self.height)
     }
 
+    /// Create a new color from an integer for quick parsing during 
+    /// drawing of simple line. Allows more flexibility instead of 
+    /// storing a Color item. Also abstracts away a bit of the 
+    /// static storage array. 
+    /// 
+    /// ```rs 
+    /// assert eq!(image.new_color(0), COLORS[0]);
+    /// ```
+    /// 
+    pub fn new_color(&self, num: u8) -> Color {
+        COLORS[num as usize]
+    }
+    
     /// Save the image to a file.
     ///
     /// ```rs
