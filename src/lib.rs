@@ -1,22 +1,22 @@
+//! The unsvg crate provides a very simple interface for drawing images.
+//!
+//! See below for an example:
+//!
+//! ```rust
+//! use unsvg::{Image, COLORS, Error};
+//!
+//! fn main() -> Result<(), Error> {
+//!     let mut img: Image = Image::new(200, 200);
+//!     let second_point = img.draw_simple_line(10.0, 10.0, 120, 100.0, COLORS[1])?;
+//!     let third_point = img.draw_simple_line(second_point.0, second_point.1, 240, 100.0, COLORS[2])?;
+//!     let _ = img.draw_simple_line(third_point.0, third_point.1, 0, 100.0, COLORS[3])?;
+//!
+//!     img.save_svg("path_to.svg")?;
+//!
+//!     Ok(())
+//! }
+//! ```
 use resvg::usvg::{NodeExt, TreeWriting, XmlOptions};
-/// The unsvg crate provides a very simple interface for drawing images.
-///
-/// See below for an example:
-///
-/// ```rust
-/// use unsvg::{Image, COLORS, Error};
-///
-/// fn main() -> Result<(), Error> {
-///     let mut img: Image = Image::new(200, 200);
-///     let second_point = img.draw_simple_line(10.0, 10.0, 120, 100.0, COLORS[1])?;
-///     let third_point = img.draw_simple_line(second_point.0, second_point.1, 240, 100.0, COLORS[2])?;
-///     let _ = img.draw_simple_line(third_point.0, third_point.1, 0, 100.0, COLORS[3])?;
-///
-///     img.save_svg("path_to.svg")?;
-///
-///     Ok(())
-/// }
-/// ```
 use resvg::{tiny_skia, usvg};
 use std::rc::Rc;
 
