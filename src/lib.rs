@@ -41,22 +41,24 @@ type Result<T> = core::result::Result<T, Error>;
 /// This contains 16 simple colors which users can select from.
 /// These correspond to the 16 colors available in the original Logo language.
 /// The colors are:
-///  - Black
-///  - Blue
-///  - Cyan
-///  - Green
-///  - Red
-///  - Magenta
-///  - Yellow
-///  - White
-///  - Brown
-///  - Tan
-///  - Forest
-///  - Aqua
-///  - Salmon
-///  - Purple
-///  - Orange
-///  - Grey
+/// ```
+///   0: Black
+///   1: Blue
+///   2: Cyan
+///   3: Green
+///   4: Red
+///   5: Magenta
+///   6: Yellow
+///   7: White
+///   8: Brown
+///   9: Tan
+///  10: Forest
+///  11: Aqua
+///  12: Salmon
+///  13: Purple
+///  14: Orange
+///  15: Grey
+/// ```
 pub static COLORS: [Color; 16] = [
     Color {
         red: 0,
