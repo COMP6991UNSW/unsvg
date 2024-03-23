@@ -211,7 +211,10 @@ impl Image {
         (self.width, self.height)
     }
 
-    /// Save the image to a file.
+    /// Save the image to a file in the `png` format.
+    /// 
+    /// Rasterises the image and stores it as a grid of pixels.
+    /// Use this if you want an image that is easy to display/view.
     ///
     /// ```rs
     /// let image = Image::new(100, 100);
@@ -225,7 +228,10 @@ impl Image {
         pixmap.save_png(path).map_err(|e| Error(e.to_string()))
     }
 
-    /// Save the image to a file.
+    /// Save the image to a file in the `svg` format.
+    ///
+    /// Stores the image in a lossless vector image format.
+    /// Use this if the precision of your lines is important.
     ///
     /// ```rs
     /// let image = Image::new(100, 100);
