@@ -140,6 +140,129 @@ pub static COLORS: [Color; 16] = [
     },
 ];
 
+/// Enum of the 16 colors available in the original Logo language.
+/// Implements `Into<usize>` to convert the enum to a usize, for indexing into the COLORS array.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ColorIndex {
+    Black,
+    Blue,
+    Cyan,
+    Green,
+    Red,
+    Magenta,
+    Yellow,
+    White,
+    Brown,
+    Tan,
+    Forest,
+    Aqua,
+    Salmon,
+    Purple,
+    Orange,
+    Grey,
+}
+
+impl From<ColorIndex> for Color {
+    fn from(index: ColorIndex) -> Self {
+        COLORS[Into::<usize>::into(index)]
+    }
+}
+
+impl From<ColorIndex> for usize {
+    /// Converts a `ColorIndex` to a usize.
+    /// This usize value corresponds with the index of the color in the COLORS array.
+    fn from(index: ColorIndex) -> Self {
+        match index {
+            ColorIndex::Black => 0,
+            ColorIndex::Blue => 1,
+            ColorIndex::Cyan => 2,
+            ColorIndex::Green => 3,
+            ColorIndex::Red => 4,
+            ColorIndex::Magenta => 5,
+            ColorIndex::Yellow => 6,
+            ColorIndex::White => 7,
+            ColorIndex::Brown => 8,
+            ColorIndex::Tan => 9,
+            ColorIndex::Forest => 10,
+            ColorIndex::Aqua => 11,
+            ColorIndex::Salmon => 12,
+            ColorIndex::Purple => 13,
+            ColorIndex::Orange => 14,
+            ColorIndex::Grey => 15,
+        }
+    }
+}
+
+impl TryFrom<usize> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from color to a `ColorIndex` variant.
+    /// Errors when the the provided index is too large for the COLORS array (index > 15).
+    fn try_from(index: usize) -> Result<Self> {
+        match index {
+            0 => Ok(ColorIndex::Black),
+            1 => Ok(ColorIndex::Blue),
+            2 => Ok(ColorIndex::Cyan),
+            3 => Ok(ColorIndex::Green),
+            4 => Ok(ColorIndex::Red),
+            5 => Ok(ColorIndex::Magenta),
+            6 => Ok(ColorIndex::Yellow),
+            7 => Ok(ColorIndex::White),
+            8 => Ok(ColorIndex::Brown),
+            9 => Ok(ColorIndex::Tan),
+            10 => Ok(ColorIndex::Forest),
+            11 => Ok(ColorIndex::Aqua),
+            12 => Ok(ColorIndex::Salmon),
+            13 => Ok(ColorIndex::Purple),
+            14 => Ok(ColorIndex::Orange),
+            15 => Ok(ColorIndex::Grey),
+            _ => Err(Error("Invalid color index".to_string())),
+        }
+    }
+}
+
+impl TryFrom<u64> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from color to a `ColorIndex` variant.
+    /// Errors when the the provided index is too large for the COLORS array (index > 15).
+    fn try_from(index: u64) -> Result<Self> {
+        match index {
+            0 => Ok(ColorIndex::Black),
+            1 => Ok(ColorIndex::Blue),
+            2 => Ok(ColorIndex::Cyan),
+            3 => Ok(ColorIndex::Green),
+            4 => Ok(ColorIndex::Red),
+            5 => Ok(ColorIndex::Magenta),
+            6 => Ok(ColorIndex::Yellow),
+            7 => Ok(ColorIndex::White),
+            8 => Ok(ColorIndex::Brown),
+            9 => Ok(ColorIndex::Tan),
+            10 => Ok(ColorIndex::Forest),
+            11 => Ok(ColorIndex::Aqua),
+            12 => Ok(ColorIndex::Salmon),
+            13 => Ok(ColorIndex::Purple),
+            14 => Ok(ColorIndex::Orange),
+            15 => Ok(ColorIndex::Grey),
+            _ => Err(Error("Invalid color index".to_string())),
+        }
+    }
+}
+
+impl TryFrom<Color> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from a `Color` to a `ColorIndex` variant.
+    /// Errors when the the provided Color is not in the COLORS array.
+    fn try_from(color: Color) -> Result<Self> {
+        COLORS
+            .iter()
+            .position(|&c| c == color)
+            .ok_or(Error("Color not in COLORS array".to_string()))
+            .and_then(|i| ColorIndex::try_from(i))
+    }
+}
+
 /// Tells you where a line will end, given a starting point, direction, and length.
 /// This is used by `draw_simple_line` to get the end point of a line.
 pub fn get_end_coordinates(x: f32, y: f32, direction: i32, length: f32) -> (f32, f32) {
