@@ -162,9 +162,17 @@ pub enum ColorIndex {
     Grey,
 }
 
-impl Into<usize> for ColorIndex {
-    fn into(self) -> usize {
-        match self {
+impl From<ColorIndex> for Color {
+    fn from(index: ColorIndex) -> Self {
+        COLORS[Into::<usize>::into(index)]
+    }
+}
+
+impl From<ColorIndex> for usize {
+    /// Converts a `ColorIndex` to a usize.
+    /// This usize value corresponds with the index of the color in the COLORS array.
+    fn from(index: ColorIndex) -> Self {
+        match index {
             ColorIndex::Black => 0,
             ColorIndex::Blue => 1,
             ColorIndex::Cyan => 2,
@@ -185,58 +193,73 @@ impl Into<usize> for ColorIndex {
     }
 }
 
-impl From<usize> for ColorIndex {
-    fn from(index: usize) -> Self {
+impl TryFrom<usize> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from color to a `ColorIndex` variant.
+    /// Errors when the the provided index is too large for the COLORS array (index > 15).
+    fn try_from(index: usize) -> Result<Self> {
         match index {
-            0 => ColorIndex::Black,
-            1 => ColorIndex::Blue,
-            2 => ColorIndex::Cyan,
-            3 => ColorIndex::Green,
-            4 => ColorIndex::Red,
-            5 => ColorIndex::Magenta,
-            6 => ColorIndex::Yellow,
-            7 => ColorIndex::White,
-            8 => ColorIndex::Brown,
-            9 => ColorIndex::Tan,
-            10 => ColorIndex::Forest,
-            11 => ColorIndex::Aqua,
-            12 => ColorIndex::Salmon,
-            13 => ColorIndex::Purple,
-            14 => ColorIndex::Orange,
-            15 => ColorIndex::Grey,
-            _ => ColorIndex::Black,
+            0 => Ok(ColorIndex::Black),
+            1 => Ok(ColorIndex::Blue),
+            2 => Ok(ColorIndex::Cyan),
+            3 => Ok(ColorIndex::Green),
+            4 => Ok(ColorIndex::Red),
+            5 => Ok(ColorIndex::Magenta),
+            6 => Ok(ColorIndex::Yellow),
+            7 => Ok(ColorIndex::White),
+            8 => Ok(ColorIndex::Brown),
+            9 => Ok(ColorIndex::Tan),
+            10 => Ok(ColorIndex::Forest),
+            11 => Ok(ColorIndex::Aqua),
+            12 => Ok(ColorIndex::Salmon),
+            13 => Ok(ColorIndex::Purple),
+            14 => Ok(ColorIndex::Orange),
+            15 => Ok(ColorIndex::Grey),
+            _ => Err(Error("Invalid color index".to_string())),
         }
     }
 }
 
-impl From<u32> for ColorIndex {
-    fn from(index: u32) -> Self {
+impl TryFrom<u64> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from color to a `ColorIndex` variant.
+    /// Errors when the the provided index is too large for the COLORS array (index > 15).
+    fn try_from(index: u64) -> Result<Self> {
         match index {
-            0 => ColorIndex::Black,
-            1 => ColorIndex::Blue,
-            2 => ColorIndex::Cyan,
-            3 => ColorIndex::Green,
-            4 => ColorIndex::Red,
-            5 => ColorIndex::Magenta,
-            6 => ColorIndex::Yellow,
-            7 => ColorIndex::White,
-            8 => ColorIndex::Brown,
-            9 => ColorIndex::Tan,
-            10 => ColorIndex::Forest,
-            11 => ColorIndex::Aqua,
-            12 => ColorIndex::Salmon,
-            13 => ColorIndex::Purple,
-            14 => ColorIndex::Orange,
-            15 => ColorIndex::Grey,
-            _ => ColorIndex::Black,
+            0 => Ok(ColorIndex::Black),
+            1 => Ok(ColorIndex::Blue),
+            2 => Ok(ColorIndex::Cyan),
+            3 => Ok(ColorIndex::Green),
+            4 => Ok(ColorIndex::Red),
+            5 => Ok(ColorIndex::Magenta),
+            6 => Ok(ColorIndex::Yellow),
+            7 => Ok(ColorIndex::White),
+            8 => Ok(ColorIndex::Brown),
+            9 => Ok(ColorIndex::Tan),
+            10 => Ok(ColorIndex::Forest),
+            11 => Ok(ColorIndex::Aqua),
+            12 => Ok(ColorIndex::Salmon),
+            13 => Ok(ColorIndex::Purple),
+            14 => Ok(ColorIndex::Orange),
+            15 => Ok(ColorIndex::Grey),
+            _ => Err(Error("Invalid color index".to_string())),
         }
     }
 }
 
-impl ColorIndex {
-    /// Get the color as a `Color` struct.
-    pub fn get_color(&self) -> Color {
-        COLORS[Into::<usize>::into(*self)]
+impl TryFrom<Color> for ColorIndex {
+    type Error = Error;
+
+    /// Tries to convert from a `Color` to a `ColorIndex` variant.
+    /// Errors when the the provided Color is not in the COLORS array.
+    fn try_from(color: Color) -> Result<Self> {
+        COLORS
+            .iter()
+            .position(|&c| c == color)
+            .ok_or(Error("Color not in COLORS array".to_string()))
+            .and_then(|i| ColorIndex::try_from(i))
     }
 }
 
