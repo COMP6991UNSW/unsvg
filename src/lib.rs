@@ -7,7 +7,7 @@
 //!
 //! fn main() -> Result<(), String> {
 //!     let mut img: Image = Image::new(200, 200);
-//!     let (x1, y1) = (10, 10)
+//!     let (x1, y1) = (10, 10);
 //!     // Second point's x and y coordinates.
 //!     let (x2, y2) = img.draw_simple_line(x1, y1, 120, 100, COLORS[1])?;
 //!     // Third point's x and y coordinates.
