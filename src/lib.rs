@@ -279,35 +279,12 @@ impl Image {
         length: i32,
         color: Color,
     ) -> Result<(i32, i32), String> {
-        let x = i32_to_f32(x);
-        let y = i32_to_f32(y);
-        let length = i32_to_f32(length);
-
-        self.draw_simple_line_precise(x, y, direction, length, color)
-            .map(|(end_x, end_y)| {
-                let end_x = f32_to_i32(end_x);
-                let end_y = f32_to_i32(end_y);
-
-                (end_x, end_y)
-            })
-    }
-
-    fn draw_simple_line_precise(
-        &mut self,
-        x: f32,
-        y: f32,
-        direction: i32,
-        length: f32,
-        color: Color,
-    ) -> Result<(f32, f32), String> {
-        let x = quantize(x);
-        let y = quantize(y);
-        let (end_x, end_y) = get_end_coordinates_precise(x, y, direction, length);
+        let (end_x, end_y) = get_end_coordinates(x, y, direction, length);
 
         let paint = usvg::Paint::Color(color);
         let mut path = tiny_skia::PathBuilder::new();
-        path.move_to(x, y);
-        path.line_to(end_x, end_y);
+        path.move_to(i32_to_f32(x), i32_to_f32(y));
+        path.line_to(i32_to_f32(end_x), i32_to_f32(end_y));
 
         let mut path = usvg::Path::new(
             path.finish()
